@@ -17,6 +17,9 @@
     verbosity: 2
   when: not kubernetes_init_stat.stat.exists
 
+########################################################################################################################
+
+## Ya que estas tareas se ejecutan como root (become:yes) el directorio donde se copia admin.conf es el de root:
 - name: Ensure .kube directory exists.
   file:
     path: ~/.kube
@@ -30,14 +33,30 @@
     state: link
     mode: 0644
 
-      ## prueba para intentar arreglar problema de join - master
-- name: Setup kubeconfig for vagrant user
+## Las siguientes tareas facilitan operar con kubectl con el usuario vagrant (si estamos haciendo pruebas con molecule)
+## o con el usuario común que habremos creado para operar con el cluster con permisos sudo
+
+- name: Check for user
+  shell: egrep "^{{ provision_cluster_user }}:" /etc/passwd
+  register: user_exists
+
+- name: Setup kubeconfig for cluster user
   command: "{{ item }}"
   with_items:
-   - mkdir -p /home/vagrant/.kube
-   - cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-   - chown vagrant:vagrant /home/vagrant/.kube/config
-     ##
+   - "mkdir -p /home/{{ provision_cluster_user }}/.kube"
+   - "cp -i /etc/kubernetes/admin.conf /home/{{ provision_cluster_user }}/.kube/config"
+   - "chown vagrant:vagrant /home/{{ provision_cluster_user }}/.kube/config"
+  when: user_exists
+
+## Copiamos el fichero de configuración en local para posteriormente ubicarlo en los nodos
+
+- name: Copy config file to local
+  fetch:
+    src: ~/.kube/config
+    dest: /tmp/config
+    flat: yes
+
+#######################################################################################################################
 
 - name: Configure Flannel networking.
   command: "{{ item }}"
