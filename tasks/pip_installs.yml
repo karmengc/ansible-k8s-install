@@ -1,0 +1,8 @@
+---
+
+- name: install python docker sdk for ansible modules
+  command: "pip install docker"
+
+- name: install openshift
+  command: "pip install openshift"
+

@@ -6,8 +6,6 @@
     creates=/etc/kubernetes/kubelet.conf
   tags: ['skip_ansible_lint']
 
-
-
 - name: Setup kubeconfig folder for root
   command: "mkdir -p /root/.kube"
 
@@ -19,16 +17,37 @@
 - name: Check for user
   shell: egrep "^{{ provision_cluster_user }}:" /etc/passwd
   register: user_exists
+  ignore_errors: true
 
 - name: Setup kubeconfig for cluster user
   command: "{{ item }}"
   with_items:
    - "mkdir -p /home/{{ provision_cluster_user }}/.kube"
-  when: user_exists
+  when: user_exists.rc == 0
 
 - name: Copy config file
   copy:
     src: "/tmp/config"
     dest: "/home/{{ provision_cluster_user }}/.kube/"
     owner: "{{ provision_cluster_user }}"
-  when: user_exists
+  when: user_exists.rc == 0
+
+
+- name: Create docker cert folder
+  file:
+    path: "/etc/docker/certs.d/master:5000/"
+    state: directory
+
+- name: Copy cert to docker certs folder at nodes
+  copy:
+    src: "/opt/certs/{{ item }}"
+    dest: "/etc/docker/certs.d/master:5000/"
+    remote_src: yes
+  with_items:
+    - registry.key
+    - registry.crt
+
+- name: Restart Docker service
+  service:
+    name: docker
+    state: restarted
