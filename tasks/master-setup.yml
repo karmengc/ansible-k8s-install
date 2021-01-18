@@ -46,7 +46,7 @@
   with_items:
    - "mkdir -p /home/{{ provision_cluster_user }}/.kube"
    - "cp -i /etc/kubernetes/admin.conf /home/{{ provision_cluster_user }}/.kube/config"
-   - "chown vagrant:vagrant /home/{{ provision_cluster_user }}/.kube/config"
+   - "chown {{ provision_cluster_user }}:{{ provision_cluster_user }} /home/{{ provision_cluster_user }}/.kube/config"
   when: user_exists.rc == 0
 
 ## Copiamos el fichero de configuración en local para posteriormente ubicarlo en los nodos
