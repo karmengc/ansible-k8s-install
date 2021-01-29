@@ -47,6 +47,8 @@
    - "mkdir -p /home/{{ provision_cluster_user }}/.kube"
    - "cp -i /etc/kubernetes/admin.conf /home/{{ provision_cluster_user }}/.kube/config"
    - "chown {{ provision_cluster_user }}:{{ provision_cluster_user }} /home/{{ provision_cluster_user }}/.kube/config"
+  args:  
+    creates: "/home/{{ provision_cluster_user }}/.kube/config"
   when: user_exists.rc == 0
 
 ## Copiamos el fichero de configuración en local para posteriormente ubicarlo en los nodos
@@ -99,7 +101,7 @@
     - not kubernetes_init_stat.stat.exists
 
 - name: Check if Kubernetes Dashboard UI service already exists.
-  shell: kubectl get services --namespace kube-system | grep -q kubernetes-dashboard
+  shell: kubectl get services --namespace kubernetes-dashboard | grep -q kubernetes-dashboard
   changed_when: false
   failed_when: false
   register: kubernetes_dashboard_service
