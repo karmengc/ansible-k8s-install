@@ -46,8 +46,10 @@
   with_items:
     - registry.key
     - registry.crt
+  register: copy_certs
 
 - name: Restart Docker service
   service:
     name: docker
     state: restarted
+  when: copy_certs is changed
