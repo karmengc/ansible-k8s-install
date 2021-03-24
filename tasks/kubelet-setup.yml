@@ -1,19 +1,19 @@
 ---
-
+# La parte de desactivar la swap se ha pasado al rol de ansible-provision-rpis
 ### https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/
-- name: Remove swapfile from /etc/fstab
-  mount:
-    name: "{{ item }}"
-    fstype: swap
-    state: absent
-  with_items:
-    - swap
-    - none
-
-- name: Disable swap
-  command: swapoff -a
-  when: ansible_swaptotal_mb > 0
-###
+#- name: Remove swapfile from /etc/fstab
+#  mount:
+#    name: "{{ item }}"
+#    fstype: swap
+#    state: absent
+#  with_items:
+#    - swap
+#    - none
+#
+#- name: Disable swap
+#  command: swapoff -a
+#  when: ansible_swaptotal_mb > 0
+####
 
 - name: Check for existence of kubelet environment file.
   stat:
