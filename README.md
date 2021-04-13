@@ -1,24 +1,24 @@
 ansible-k8s-install
 =========
 
-Rol de Ansible que instala Kubernetes en un máster y N nodos.
+Rol de Ansible que instala Kubernetes en un máster y N nodos. Se han extraído tareas del rol https://github.com/geerlingguy/ansible-role-kubernetes y adaptado para un proyecto específico sobre Raspberrys Pis, y además con pruebas con Molecule, Vagrant y VirtualBox desde el playbook ansible-tfm-cpg.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Este rol ha sido testeado sobre Ubuntu-20.10
 
 Role Variables
 --------------
 
-=== Variables del rol ===
+## Variables del rol
 Las siguientes variables son asignadas a nivel de rol:
 ```
 procps_package: procps
 kubelet_environment_file_path: /etc/default/kubelet
 ```
 
-=== Variables por defecto ===
+## Variables por defecto
 Las siguientes variables son asignadas por defecto y puede modificarse su valor a la hora de llamar al rol. Observamos que el sistema de red entre pods por defecto es Flannel, y es posible elegir calico si se desea. 
 ```
 kubernetes_packages:
@@ -45,7 +45,7 @@ kubernetes_pod_network:
   cni: 'flannel'
   cidr: '10.244.0.0/16'
 ```
-=== Variables para pruebas con molecule ===
+## Variables para pruebas con molecule
 Se aconseja establecer estas variables para pruebas con molecule al llamar a este rol:
 ```
 kubernetes_kubelet_extra_args: "--fail-swap-on=false --cgroup-driver=cgroupfs"
@@ -53,7 +53,7 @@ kubernetes_apiserver_advertise_address: "{{ ansible_enp0s8.ipv4.address }}"
 ```
 
 
-Dependencies
+Dependencias
 ------------
 
 Este rol cuenta en sus dependencias con el rol **geerlingguy.docker** el cual es descargado desde Gallaxy mediante su mención en el fichero meta/main.yml de este rol.
